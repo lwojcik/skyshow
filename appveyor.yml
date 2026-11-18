@@ -1,0 +1,28 @@
+image: Ubuntu2404
+platform: x64
+stack: node lts/*
+
+environment:
+  HUSKY: "0"
+
+install:
+  - npm ci
+
+test_script:
+  - npm run format:check
+  - npm run typecheck
+  - npm run lint
+  - npm run test:coverage
+
+build_script:
+  - npm run build
+
+after_test:
+  - curl https://keybase.io/codecovsecops/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+  - curl -Os https://cli.codecov.io/latest/linux/codecov
+  - curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM
+  - curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig
+  - gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+  - shasum -a 256 -c codecov.SHA256SUM
+  - chmod +x codecov
+  - ./codecov upload-process

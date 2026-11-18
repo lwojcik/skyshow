@@ -1,0 +1,78 @@
+{
+  "name": "skyshow",
+  "version": "0.0.0",
+  "description": "What the sky does over a place on a date: golden and blue hours, moon phases with supermoons and blue moons, meteor shower peaks, eclipses visible from the place and the seasons, computed with astronomy-engine.",
+  "keywords": [
+    "astronomy",
+    "sunrise",
+    "sunset",
+    "golden-hour",
+    "blue-hour",
+    "moon",
+    "moon-phases",
+    "meteor-showers",
+    "eclipse",
+    "solstice",
+    "equinox",
+    "sky",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": "Łukasz Wójcik",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lwojcik/skyshow.git"
+  },
+  "bugs": "https://github.com/lwojcik/skyshow/issues",
+  "homepage": "https://github.com/lwojcik/skyshow#readme",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "commit": "czg",
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "TZ=UTC vitest run",
+    "test:coverage": "TZ=UTC vitest run --coverage",
+    "prepublishOnly": "npm run build",
+    "release": "HUSKY=0 GITHUB_TOKEN=$(gh auth token) release-it --no-increment --no-git.commit",
+    "release:prepare": "scripts/release-prepare.sh"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@lwojcik/eslint-config": "0.2.0",
+    "@release-it/conventional-changelog": "^12.0.2",
+    "@types/node": "26.6.6",
+    "@vitest/coverage-v8": "5.1.0",
+    "czg": "1.14.0",
+    "eslint": "^10.15.0",
+    "husky": "9.1.7",
+    "prettier": "3.10.1",
+    "release-it": "^21.1.2",
+    "tsdown": "0.23.7",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "5.1.0"
+  },
+  "dependencies": {
+    "astronomy-engine": "2.1.19"
+  }
+}

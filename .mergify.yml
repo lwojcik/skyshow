@@ -1,0 +1,52 @@
+queue_rules:
+  - name: default
+    merge_method: squash
+    merge_conditions:
+      - check-success=continuous-integration/appveyor/branch
+      - check-success=continuous-integration/appveyor/pr
+
+pull_request_rules:
+  - name: Automatic merge of Dependabot dependency upgrades
+    conditions:
+      - author=dependabot[bot]
+      - -conflict
+      - check-success=continuous-integration/appveyor/branch
+      - check-success=continuous-integration/appveyor/pr
+    actions:
+      merge:
+        method: squash
+
+  - name: Ask to resolve conflict
+    conditions:
+      - conflict
+    actions:
+      comment:
+        message: This pull request is now in conflicts. Could you fix it @{{author}}?
+
+  - name: Automatic merge of owner-made PRs for main when CI passes and owner approves
+    conditions:
+      - check-success=continuous-integration/appveyor/branch
+      - check-success=continuous-integration/appveyor/pr
+      - author=lwojcik
+      - base=main
+      - -conflict
+      - label!=work-in-progress
+      - label=ready-to-merge
+    actions:
+      merge:
+        method: squash
+
+  - name: Automatic merge of PRs for main when CI passes and owner approves
+    conditions:
+      - check-success=continuous-integration/appveyor/branch
+      - check-success=continuous-integration/appveyor/pr
+      - author!=lwojcik
+      - author!=dependabot[bot]
+      - -conflict
+      - base=main
+      - label!=work-in-progress
+      - approved-reviews-by=lwojcik
+      - label=ready-to-merge
+    actions:
+      merge:
+        method: squash
