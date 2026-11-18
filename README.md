@@ -2,6 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/skyshow)](https://www.npmjs.com/package/skyshow)
 [![Build status](https://ci.appveyor.com/api/projects/status/m0q6cse1j55rma2f/branch/main?svg=true)](https://ci.appveyor.com/project/lwojcik/skyshow/branch/main)
+[![codecov](https://codecov.io/github/lwojcik/skyshow/graph/badge.svg?token=GLo1RKfODO)](https://codecov.io/github/lwojcik/skyshow)
 
 What the sky does over a place on a date: the golden and blue hours, the moon's phases (with supermoons and blue moons), the peaks of the meteor showers, the eclipses you can see from the place, and the equinoxes and solstices. It is a thin, checked layer over [`astronomy-engine`](https://www.npmjs.com/package/astronomy-engine).
 
