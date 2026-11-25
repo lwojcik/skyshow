@@ -1,0 +1,56 @@
+# skyshow
+
+> What the sky does over a place on a date: golden and blue hours, moon phases (supermoons, blue moons), meteor shower peaks, eclipses visible from the place, equinoxes and solstices. ESM only, Node >= 24, computed with astronomy-engine. No network, no side effects.
+
+## Conventions that matter
+
+- A `Place` is `{ latitude, longitude, elevation, timeZone }`: degrees (north and east positive), metres, and an IANA zone name such as `Europe/Warsaw`. The time zone is required; there is no default and no lookup from coordinates.
+- Days are strings `YYYY-MM-DD`. Clock times are strings `YYYY-MM-DDTHH:MM:SS` in the place's time zone, rounded to the minute, with no offset. Moments of astronomical events (`at`, `peak`, `begin`, `end`) are `Date` instants.
+- Every function takes one object argument (except `seasonsOf(year)`, `nextSeason(after)`, `moonIllumination(at)`, `moonDistanceKm(at)`).
+- Bad input throws a `RangeError` whose message says what was expected (malformed day, latitude out of range, unknown time zone, `from` after `to`). It never returns an empty result for invalid input.
+- `null` means "does not happen": `lightOfDay` returns `null` for the whole day when a sunrise, sunset or hour boundary does not exist (polar day or night); `astronomicalNightStart` alone is `null` when the sun never gets below -18 degrees; `showerNights` leaves out a night with no civil twilight.
+- Results are plain data (no classes), safe to `JSON.stringify` (dates become ISO strings).
+
+## Which function answers what
+
+- Sunrise, sunset, golden hour, blue hour for a day: `lightOfDay({ date, place })`.
+- Full, new and quarter moons in a range, with `isSuper` and `isBlue` on full moons: `moonPhases({ from, to, timeZone })`.
+- Meteor showers peaking in a range, with the best night and the moon's state: `showerNights({ from, to, place })`.
+- Eclipses someone at this place can actually see: `visibleEclipses({ from, to, place })` returns `{ lunar, solar }`.
+- Equinoxes and solstices: `seasonsOf(year)` for a year, `nextSeason(after)` for the next one after a moment.
+- Building blocks: `riseSet`, `sunCrossing`, `bodyAltitude`, `moonIllumination`, `moonDistanceKm`, and the clock helpers `toMinute`, `localDateTime`, `localToInstant`, `dayOf`, `addDays`.
+
+## Example
+
+```ts
+import { lightOfDay, moonPhases } from 'skyshow';
+
+const place = {
+  latitude: 52.2319,
+  longitude: 21.0067,
+  elevation: 100,
+  timeZone: 'Europe/Warsaw',
+};
+
+lightOfDay({ date: '2027-12-21', place });
+// { date, sunrise: '2027-12-21T07:43:00', sunset: '2027-12-21T15:25:00', goldenMorning, ... } or null
+
+moonPhases({
+  from: new Date('2027-01-01T00:00:00Z'),
+  to: new Date('2027-02-01T00:00:00Z'),
+  timeZone: place.timeZone,
+});
+// [{ phase: 'full', at: Date, distanceKm, isSuper, isBlue }, ...]
+```
+
+## Pitfalls
+
+- Do not pass local clock strings where a `Date` is expected, or the reverse. `localToInstant` turns a clock string into epoch milliseconds (a number, not a `Date`).
+- `to` is exclusive in `moonPhases`, `showerNights` and `visibleEclipses`.
+- Shower peaks use the sun's longitude of the J2000 equinox, as the International Meteor Organization prints it. Do not "correct" this to the longitude of date: peaks would come out about 9 hours early.
+- Times are for a flat horizon and rounded to the minute. They are not an almanac of record.
+
+## Docs
+
+- README.md in this package has the full API description.
+- Types are in `dist/index.d.mts`.

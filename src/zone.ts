@@ -30,6 +30,7 @@ const formatFor = (timeZone: string) => {
 
 const naiveUtc = (local: string) => Date.parse(`${local}Z`);
 
+/** An instant written as the clock of `timeZone`: `YYYY-MM-DDTHH:MM:SS`. @throws RangeError for an unknown time zone */
 export const localDateTime = ({
   at,
   timeZone,
@@ -46,6 +47,7 @@ export const localDateTime = ({
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`;
 };
 
+/** The instant, in epoch milliseconds, at which the clock of `timeZone` reads `local` (`YYYY-MM-DDTHH:MM:SS`). */
 export const localToInstant = ({
   local,
   timeZone,
@@ -61,6 +63,7 @@ export const localToInstant = ({
   return guess - secondOffset;
 };
 
+/** `localDateTime` after rounding the instant to the nearest minute. */
 export const toMinute = ({
   at,
   timeZone,
@@ -73,6 +76,7 @@ export const toMinute = ({
     timeZone,
   });
 
+/** Moves a `YYYY-MM-DD` day by a whole number of days (negative goes back). */
 export const addDays = ({
   date,
   days,
@@ -84,5 +88,6 @@ export const addDays = ({
     .toISOString()
     .slice(0, ISO_DATE_LENGTH);
 
+/** The local day, `YYYY-MM-DD`, of an instant in `timeZone`. */
 export const dayOf = ({ at, timeZone }: { at: Date; timeZone: string }) =>
   toMinute({ at, timeZone }).slice(0, ISO_DATE_LENGTH);

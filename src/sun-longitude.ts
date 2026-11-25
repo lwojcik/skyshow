@@ -55,6 +55,7 @@ const narrow = ({
   });
 };
 
+/** The instant the sun's ecliptic longitude (J2000 equinox) reaches `degrees`, searching `days` days from `from`. @throws RangeError if it does not within that span */
 export const sunReaches = ({
   degrees,
   from,

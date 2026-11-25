@@ -11,6 +11,7 @@ import {
 } from 'astronomy-engine';
 
 import type { Celestial, Place, Way } from '@sky/types';
+import { assertDate, assertPlace } from '@sky/validate';
 import { addDays, localToInstant, toMinute } from '@sky/zone';
 
 const KM_PER_AU = 149_597_870.7;
@@ -41,6 +42,10 @@ const withinDay = ({
   end: number;
 }): Date | null => (found !== null && +found.date < end ? found.date : null);
 
+/**
+ * Local clock time (`YYYY-MM-DDTHH:MM:SS`, to the minute) when the sun or moon rises or sets on a local day, or `null` if it does not that day.
+ * @throws RangeError on a malformed date or an invalid place
+ */
 export const riseSet = ({
   body,
   way,
@@ -52,6 +57,9 @@ export const riseSet = ({
   date: string;
   place: Place;
 }): string | null => {
+  assertDate(date);
+  assertPlace(place);
+
   const { start, end, limitDays } = dayRange({
     date,
     timeZone: place.timeZone,
@@ -70,6 +78,10 @@ export const riseSet = ({
   return found && toMinute({ at: found, timeZone: place.timeZone });
 };
 
+/**
+ * Local clock time (`YYYY-MM-DDTHH:MM:SS`, to the minute) when the sun rises or sets through `altitude` degrees on a local day, or `null` if it does not that day.
+ * @throws RangeError on a malformed date or an invalid place
+ */
 export const sunCrossing = ({
   altitude,
   way,
@@ -81,6 +93,9 @@ export const sunCrossing = ({
   date: string;
   place: Place;
 }): string | null => {
+  assertDate(date);
+  assertPlace(place);
+
   const { start, end, limitDays } = dayRange({
     date,
     timeZone: place.timeZone,
@@ -100,9 +115,11 @@ export const sunCrossing = ({
   return found && toMinute({ at: found, timeZone: place.timeZone });
 };
 
+/** Illuminated fraction of the moon's disc at an instant, 0 (new) to 1 (full). */
 export const moonIllumination = (at: Date): number =>
   Illumination(Body.Moon, MakeTime(at)).phase_fraction;
 
+/** Altitude in degrees above the horizon (negative is below), refraction included, of the sun or moon seen from a place at an instant. */
 export const bodyAltitude = ({
   body,
   at,
@@ -119,5 +136,6 @@ export const bodyAltitude = ({
   return Horizon(time, observer, equator.ra, equator.dec, 'normal').altitude;
 };
 
+/** Distance from the centre of the earth to the centre of the moon at an instant, in kilometres. */
 export const moonDistanceKm = (at: Date): number =>
   GeoMoon(at).Length() * KM_PER_AU;

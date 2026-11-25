@@ -1,7 +1,12 @@
+/** A point on earth and the time zone its clock follows. */
 export interface Place {
+  /** Degrees, −90 to 90, north positive. */
   latitude: number;
+  /** Degrees, −180 to 180, east positive. */
   longitude: number;
+  /** Metres above sea level. */
   elevation: number;
+  /** IANA time zone name, e.g. `Europe/Warsaw`. */
   timeZone: string;
 }
 
@@ -9,6 +14,7 @@ export type Celestial = 'sun' | 'moon';
 
 export type Way = 'rise' | 'set';
 
+/** Sun altitudes in degrees that bound the golden hour (`goldenBottom` to `goldenTop`), the blue hour (`blueBottom` to `goldenBottom`) and astronomical night. */
 export interface Altitudes {
   goldenTop: number;
   goldenBottom: number;
@@ -16,6 +22,7 @@ export interface Altitudes {
   astronomicalNight: number;
 }
 
+/** Local clock strings `YYYY-MM-DDTHH:MM:SS`. Morning runs blueMorning → goldenMorning (blue) → morningEnd (golden); evening runs eveningStart → goldenEvening (golden) → blueEvening (blue). */
 export interface DayLight {
   date: string;
   sunrise: string;
@@ -31,6 +38,7 @@ export interface DayLight {
 
 export type MoonQuarter = 'new' | 'first' | 'full' | 'last';
 
+/** One quarter of the moon. `distanceKm`, `isSuper` and `isBlue` only mean something when `phase` is `full` (`distanceKm` is 0 otherwise). */
 export interface MoonPhase {
   phase: MoonQuarter;
   at: Date;
@@ -39,6 +47,7 @@ export interface MoonPhase {
   distanceKm: number;
 }
 
+/** A meteor shower: `degrees` is the sun's ecliptic longitude (J2000) at the peak, `zhr` the zenithal hourly rate, `activeFrom`/`activeTo` are `MM-DD`. */
 export interface MeteorShower {
   slug: string;
   name: string;
@@ -48,6 +57,7 @@ export interface MeteorShower {
   activeTo: string;
 }
 
+/** A shower's peak and the night nearest to it. `nightStart` is a `YYYY-MM-DD` day; `dusk` and `dawn` are local clock strings. */
 export interface ShowerNight {
   shower: MeteorShower;
   peak: Date;
@@ -60,6 +70,7 @@ export interface ShowerNight {
 
 export type LunarKind = 'partial' | 'total';
 
+/** A lunar eclipse seen from a place. `obscuration` is 0 to 1; the minutes are the semi-durations of the partial and total phases; `moonAltitude` is in degrees at the peak. */
 export interface LunarEclipse {
   kind: LunarKind;
   peak: Date;
@@ -71,6 +82,7 @@ export interface LunarEclipse {
 
 export type SolarKind = 'partial' | 'annular' | 'total';
 
+/** A solar eclipse seen from a place. `obscuration` is the share of the sun's disc hidden at the peak (0 to 1); `sunAltitude` is in degrees at the peak. */
 export interface SolarEclipse {
   kind: SolarKind;
   obscuration: number;
@@ -88,11 +100,13 @@ export interface VisibleEclipses {
 export type SeasonName =
   'marchEquinox' | 'juneSolstice' | 'septemberEquinox' | 'decemberSolstice';
 
+/** An equinox or solstice and the instant it happens (UTC). */
 export interface Season {
   season: SeasonName;
   at: Date;
 }
 
+/** A span of instants; `from` must not be after `to`. */
 export interface Range {
   from: Date;
   to: Date;

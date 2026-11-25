@@ -30,7 +30,8 @@
     "node": ">=24"
   },
   "files": [
-    "dist"
+    "dist",
+    "llms.txt"
   ],
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
