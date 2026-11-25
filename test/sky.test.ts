@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   METEOR_SHOWERS,
   moonPhases,
+  nextSeason,
   seasonsOf,
   showerNights,
   visibleEclipses,
@@ -80,6 +81,28 @@ describe('seasonsOf', () => {
         "decemberSolstice 2026-12-21T20:50:22.187Z",
       ]
     `);
+  });
+});
+
+describe('nextSeason', () => {
+  it('gives the first equinox or solstice after a moment', () => {
+    expect(nextSeason(utc('2026-11-25'))).toEqual({
+      season: 'decemberSolstice',
+      at: seasonsOf(2026)[3].at,
+    });
+  });
+
+  it('rolls over to the March equinox of the next year', () => {
+    expect(nextSeason(utc('2026-12-22'))).toEqual({
+      season: 'marchEquinox',
+      at: seasonsOf(2027)[0].at,
+    });
+  });
+
+  it('skips a season that is happening at that very moment', () => {
+    const { at } = seasonsOf(2026)[1];
+
+    expect(nextSeason(at).season).toBe('septemberEquinox');
   });
 });
 
