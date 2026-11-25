@@ -6,7 +6,7 @@ TypeScript library: what the sky does over a place on a date, as a thin checked 
 
 - `npm ci`, then `npm test` (runs with `TZ=UTC`; do not run `vitest` directly), `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build`.
 - All of test, typecheck, lint and format:check must pass before a commit. Husky runs the hooks.
-- Commits follow Conventional Commits (`npm run commit` is an interactive helper; commitlint enforces it). Releases are cut with release-it; do not bump the version by hand.
+- Commits follow Conventional Commits (`npm run commit` is an interactive helper; commitlint enforces it). Releases are cut with release-it; do not bump the version by hand. `npm run release:prepare` opens the version PR; after it merges, `npm run release` tags and creates the GitHub release; pushing the tag triggers `.github/workflows/publish.yml`, which publishes to npm with provenance via trusted publishing (never publish from a laptop).
 
 ## Layout
 
