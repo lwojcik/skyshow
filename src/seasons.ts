@@ -12,3 +12,11 @@ export const seasonsOf = (year: number): Season[] => {
     { season: 'decemberSolstice', at: found.dec_solstice.date },
   ];
 };
+
+export const nextSeason = (after: Date): Season => {
+  const year = after.getUTCFullYear();
+
+  return [...seasonsOf(year), ...seasonsOf(year + 1)].find(
+    ({ at }) => at > after,
+  ) as Season;
+};
