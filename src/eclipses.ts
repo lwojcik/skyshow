@@ -17,7 +17,9 @@ import type {
   SolarEclipse,
   VisibleEclipses,
 } from '@sky/types';
+import { assertPlace, assertRange } from '@sky/validate';
 
+/** Default share (0 to 1) of the sun's disc a solar eclipse must hide to be reported. */
 export const MIN_SOLAR_OBSCURATION = 0.1;
 
 const observerOf = (place: Place) =>
@@ -46,6 +48,14 @@ const solarBetween = ({
   return walk(SearchLocalSolarEclipse(from, observerOf(place)));
 };
 
+/**
+ * The eclipses seen from a place between `from` and `to`.
+ *
+ * Lunar: partial or total only (penumbral ones are left out) with the moon above the horizon at the peak.
+ * Solar: hiding at least `minSolarObscuration` of the sun, with the sun above the horizon at the peak.
+ *
+ * @throws RangeError when `from` is after `to`, a date is invalid, or the place is invalid
+ */
 export const visibleEclipses = ({
   from,
   to,
@@ -54,33 +64,38 @@ export const visibleEclipses = ({
 }: Range & {
   place: Place;
   minSolarObscuration?: number;
-}): VisibleEclipses => ({
-  lunar: lunarBetween({ from, to })
-    .filter(({ kind }) => kind !== EclipseKind.Penumbral)
-    .map((found): LunarEclipse => ({
-      kind: found.kind === EclipseKind.Total ? 'total' : 'partial',
-      peak: found.peak.date,
-      obscuration: found.obscuration,
-      partialMinutes: found.sd_partial,
-      totalMinutes: found.sd_total,
-      moonAltitude: bodyAltitude({
-        body: 'moon',
-        at: found.peak.date,
-        place,
-      }),
-    }))
-    .filter(({ moonAltitude }) => moonAltitude > 0),
-  solar: solarBetween({ from, to, place })
-    .map((found): SolarEclipse => ({
-      kind: found.kind as SolarEclipse['kind'],
-      obscuration: found.obscuration,
-      begin: found.partial_begin.time.date,
-      peak: found.peak.time.date,
-      end: found.partial_end.time.date,
-      sunAltitude: found.peak.altitude,
-    }))
-    .filter(
-      ({ obscuration, sunAltitude }) =>
-        obscuration >= minSolarObscuration && sunAltitude > 0,
-    ),
-});
+}): VisibleEclipses => {
+  assertRange({ from, to });
+  assertPlace(place);
+
+  return {
+    lunar: lunarBetween({ from, to })
+      .filter(({ kind }) => kind !== EclipseKind.Penumbral)
+      .map((found): LunarEclipse => ({
+        kind: found.kind === EclipseKind.Total ? 'total' : 'partial',
+        peak: found.peak.date,
+        obscuration: found.obscuration,
+        partialMinutes: found.sd_partial,
+        totalMinutes: found.sd_total,
+        moonAltitude: bodyAltitude({
+          body: 'moon',
+          at: found.peak.date,
+          place,
+        }),
+      }))
+      .filter(({ moonAltitude }) => moonAltitude > 0),
+    solar: solarBetween({ from, to, place })
+      .map((found): SolarEclipse => ({
+        kind: found.kind as SolarEclipse['kind'],
+        obscuration: found.obscuration,
+        begin: found.partial_begin.time.date,
+        peak: found.peak.time.date,
+        end: found.partial_end.time.date,
+        sunAltitude: found.peak.altitude,
+      }))
+      .filter(
+        ({ obscuration, sunAltitude }) =>
+          obscuration >= minSolarObscuration && sunAltitude > 0,
+      ),
+  };
+};

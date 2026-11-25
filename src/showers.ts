@@ -1,8 +1,10 @@
 import { bodyAltitude, moonIllumination, sunCrossing } from '@sky/bodies';
 import { sunReaches } from '@sky/sun-longitude';
 import type { MeteorShower, Place, Range, ShowerNight } from '@sky/types';
+import { assertPlace, assertRange } from '@sky/validate';
 import { addDays, dayOf, localToInstant } from '@sky/zone';
 
+/** The nine meteor showers with a ZHR of 10 or more from the International Meteor Organization's working list. `degrees` is the sun's ecliptic longitude (J2000 equinox) at the peak; `activeFrom`/`activeTo` are `MM-DD`. */
 export const METEOR_SHOWERS: MeteorShower[] = [
   {
     slug: 'quadrantids',
@@ -78,7 +80,9 @@ export const METEOR_SHOWERS: MeteorShower[] = [
   },
 ];
 
+/** Sun altitude, in degrees, that ends dusk and starts dawn for a shower night. */
 export const CIVIL_TWILIGHT = -6;
+/** Local hour (after midnight) taken as the middle of the night when picking the night nearest a peak. */
 export const NIGHT_CENTRE_HOUR = 1;
 
 const YEAR_DAYS = 366;
@@ -160,6 +164,15 @@ const nightFor = ({
   };
 };
 
+/**
+ * The meteor shower peaks that fall between `from` and `to`, each with the night nearest the peak.
+ *
+ * `nightStart` is the local day the night begins on; `dusk` and `dawn` are local clock strings (`YYYY-MM-DDTHH:MM:SS`).
+ * `moonIllumination` is 0 to 1 at local midnight, `moonIsUp` whether the moon is above the horizon then.
+ * A night without civil twilight at the place (high latitude in summer) is left out.
+ *
+ * @throws RangeError when `from` is after `to`, a date is invalid, or the place is invalid
+ */
 export const showerNights = ({
   from,
   to,
@@ -167,6 +180,9 @@ export const showerNights = ({
   civilTwilight = CIVIL_TWILIGHT,
   nightCentreHour = NIGHT_CENTRE_HOUR,
 }: Range & { place: Place } & NightOptions): ShowerNight[] => {
+  assertRange({ from, to });
+  assertPlace(place);
+
   const first = Number(
     dayOf({ at: from, timeZone: place.timeZone }).slice(0, YEAR_LENGTH),
   );

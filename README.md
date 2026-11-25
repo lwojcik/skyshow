@@ -49,6 +49,14 @@ lightOfDay({ date: '2027-12-21', place });
 - **`seasonsOf(year)`** gives the March equinox, the June solstice, the September equinox and the December solstice, as instants. **`nextSeason(after)`** gives the first of them after a moment, looking into the next year when the year is over.
 - **`riseSet`, `sunCrossing`, `bodyAltitude`, `moonIllumination`, `moonDistanceKm`** are the building blocks, and **`toMinute`, `localDateTime`, `localToInstant`, `dayOf`, `addDays`** convert between instants and the clock of a time zone.
 
+## Errors
+
+Bad input throws a `RangeError` that says what was expected: a day that is not `YYYY-MM-DD`, a latitude outside −90…90, an unknown time zone, a `from` after `to`. It never quietly returns an empty result.
+
+## For AI agents
+
+[`llms.txt`](llms.txt) ships in the package (`node_modules/skyshow/llms.txt`): the conventions (units, time formats, what `null` means), which function answers which question, and the pitfalls. To make the agents in your project use it, add a line to your `AGENTS.md` or `CLAUDE.md`: _For sky times (golden hour, moon phases, meteor showers, eclipses, seasons) use `skyshow`; read `node_modules/skyshow/llms.txt` first._
+
 ## Accuracy
 
 The times are computed from the positions of the sun and the moon, for a point with no buildings or terrain, and rounded to the minute. They were compared with timeanddate.com for one date and with a second, independent computation (NOAA's algorithm) for the equinoxes and solstices, which agreed within 35 seconds. This is not an almanac of record. A new version of `astronomy-engine` can move a time by a minute, which is why it is pinned here and updated deliberately.
