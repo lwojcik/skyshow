@@ -1,6 +1,6 @@
 {
   "name": "skyshow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "What the sky does over a place on a date: golden and blue hours, moon phases with supermoons and blue moons, meteor shower peaks, eclipses visible from the place and the seasons, computed with astronomy-engine.",
   "keywords": [
     "astronomy",
